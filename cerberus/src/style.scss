@@ -1,0 +1,84 @@
+* {
+	font-family: 'Georgia';
+	font-size: 16px;
+	font-weight: normal;
+	color: #bbb;
+}
+
+body, html {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+
+	background-color: #2E383A;
+}
+
+h1 {
+	color: white;
+	font-size: 48px;
+}
+
+h2 {
+	color: #DBDFE1;
+}
+
+a {
+	color: #3b98b2;
+	cursor: pointer;
+
+	&:hover {
+		color: white;
+	}
+}
+
+button {
+	font-size: 12px;
+	font-family: Arial;
+	color: black;
+	padding: 5px;
+	width: 100px;
+}
+
+#loader {
+	position: absolute;
+
+	display: block;
+	width: 31px;
+	height: 31px;
+
+	background-image: url('ajax-loader.gif');
+}
+
+.loaderBar {
+	display: inline-block;
+
+	background-image: url('bar.gif');
+	background-repeat: no-repeat;
+
+	width: 220px;
+	height: 19px;
+}
+
+.action {
+	display: inline-block;
+	width: 24px;
+	height: 24px;
+
+	vertical-align: bottom;
+
+	background-image: url("refresh.png");
+
+	&.delete {
+		background-image: url("erase.png");
+	}
+}
+
+.path {
+	line-height: 24px;
+}
+
+.content {
+	margin: 0 auto;
+	width: 1000px;
+}
