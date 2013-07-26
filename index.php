@@ -49,6 +49,12 @@ echo "
 		</div>
 	</div>
 
+	<div ng-show='nothingToDoHere'>
+		<h2>Deployment</h2>
+
+		<p>Gratulations! Everything is up to date.</p>
+	</div>
+
 	<script type='text/javascript' src='cerberus/src/jquery-1.8.0.min.js'></script>
 	<script type='text/javascript' src='cerberus/src/angular.min.js'></script>
 	<script type='text/javascript' src='cerberus/src/page.js'></script>

@@ -7,6 +7,7 @@ cerberusApp.controller('CerberusCtrl', ['$scope', '$http', function ($scope, $ht
 	$scope.files = [];
 	$scope.total = 0;
 	$scope.changed = 0;
+	$scope.nothingToDoHere = false;
 
 	/**
 	 * @param {string} url
@@ -17,31 +18,35 @@ cerberusApp.controller('CerberusCtrl', ['$scope', '$http', function ($scope, $ht
 		$scope.projects = projects;
 	};
 
-	$scope.deploy = function () {
-		var key = 0,
-			url = $scope.url + 'deploy.php';
+	$scope.callDeploy = function (key, url) {
+		$scope.files[key].uploading = true;
+		$scope.files[key].project = $scope.projectId;
 
+		$.post(
+			url,
+			$scope.files[key],
+			function (json) {
+				$scope.files[key].uploading = false;
+				$scope.files[key].localPath = json.success ? 'Done' : 'Failed...';
+				$scope.$apply();
+
+				++key;
+				if ($scope.files[key]) {
+					$scope.callDeploy(key, url);
+				}
+			}
+		);
+	};
+
+	$scope.deploy = function () {
 		if ($scope.files.length === 0) {
 			return;
 		}
 
-		function callDeploy() {
-			$scope.files[key].uploading = true;
-			$scope.files[key].project = $scope.projectId;
+		var key = 0,
+			url = $scope.url + 'deploy.php';
 
-			$.post(
-				url,
-				$scope.files[key],
-				function (json) {
-					$scope.files[key].uploading = false;
-					$scope.files[key].localPath = json.success ? 'Done' : 'Failed...';
-
-					++key;
-					callDeploy();
-				});
-		}
-
-		callDeploy();
+		$scope.callDeploy(key, url);
 	};
 
 	$scope.cancel = function () {
@@ -59,6 +64,8 @@ cerberusApp.controller('CerberusCtrl', ['$scope', '$http', function ($scope, $ht
 			$scope.total = json.total;
 			$scope.changed = json.changed;
 			$scope.files = json.files;
+
+			$scope.nothingToDoHere = json.files.length === 0;
 
 			$.fn.removeLoader();
 		});
