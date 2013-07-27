@@ -12,6 +12,8 @@ class UploadFile {
 	 * @param bool $success
 	 */
 	public function response($success) {
+		header("Content-type: application/json");
+
 		echo json_encode(
 			array('success' => (bool)$success)
 		);
