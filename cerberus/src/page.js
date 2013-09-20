@@ -21,6 +21,8 @@ cerberusApp.controller('CerberusCtrl', ['$scope', '$http', function ($scope, $ht
 	$scope.callDeploy = function (key, url) {
 		$scope.files[key].uploading = true;
 		$scope.files[key].project = $scope.projectId;
+		$scope.$apply();
+
 
 		$.post(
 			url,
@@ -34,6 +36,8 @@ cerberusApp.controller('CerberusCtrl', ['$scope', '$http', function ($scope, $ht
 				if ($scope.files[key]) {
 					$scope.callDeploy(key, url);
 				}
+
+				$scope.$apply();
 			}
 		);
 	};
@@ -58,7 +62,7 @@ cerberusApp.controller('CerberusCtrl', ['$scope', '$http', function ($scope, $ht
 
 		var url = $scope.url + 'files.php?project=' + id;
 
-		$('body').showLoader();
+		$('#body').showLoader();
 
 		$http.get(url).success(function (json) {
 			$scope.total = json.total;

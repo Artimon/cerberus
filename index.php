@@ -20,39 +20,56 @@ echo "
 	<link rel='stylesheet' type='text/css' href='cerberus/src/style.css'>
 </head>
 <body ng-controller='CerberusCtrl' ng-init='setup(\"{$_SERVER["REQUEST_URI"]}\", {$projects})'>
-	<div class='content'>
-		<h1>Cerberus</h1>
-		<h2>Projects</h2>
-
-		<ul>
-			<li ng-repeat='project in projects'>
-				<a ng-click='loadProject(project.id)'>Load {{project.title}}</a>
-			</li>
-		</ul>
-
-	<div ng-show='files'>
-		<h2>Deployment</h2>
-
-		<p>
-			{{changed}} / {{total}} files changed.
-		</p>
-
-		<p>
-			<button ng-click='deploy()'>Deploy</button>
-			<button ng-click='cancel()'>Cancel</button>
-		</p>
-
-		<div ng-repeat='file in files'>
-			<div class='action' ng-class='{ 4: \"delete\" }[file.action]'></div>
-			<span class='path' ng-hide='file.uploading'>{{file.localPath}}</span>
-			<div class='loaderBar' ng-show='file.uploading'></div>
+	<div id='header'>
+		<div class='content'>
+			<h1>Cerberus</h1>
 		</div>
 	</div>
 
-	<div ng-show='nothingToDoHere'>
-		<h2>Deployment</h2>
+	<div id='body'>
+		<div class='content'>
+			<div class='projects'>
+				<h2>Projects</h2>
+				<p>
+					Click on any project to view its file changes.
+				</p>
 
-		<p>Gratulations! Everything is up to date.</p>
+				<ul>
+					<li ng-repeat='project in projects'>
+						<a ng-click='loadProject(project.id)'>Load {{project.title}}</a>
+					</li>
+				</ul>
+			</div>
+
+			<div class='files'>
+				<div ng-show='files'>
+					<h2>Deployment</h2>
+
+					<p>
+						{{changed}} / {{total}} files changed.
+					</p>
+
+					<p>
+						<button ng-click='deploy()'>Deploy</button>
+						<button ng-click='cancel()'>Cancel</button>
+					</p>
+
+					<div ng-repeat='file in files'>
+						<div class='action' ng-class='{ 4: \"delete\" }[file.action]'></div>
+						<span class='path' ng-hide='file.uploading'>{{file.localPath}}</span>
+						<div class='loaderBar' ng-show='file.uploading'></div>
+					</div>
+				</div>
+
+				<div ng-show='nothingToDoHere'>
+					<h2>Deployment</h2>
+
+					<p>Gratulations! Everything is up to date.</p>
+				</div>
+			</div>
+
+			<div class='clear'></div>
+		</div>
 	</div>
 
 	<script type='text/javascript' src='cerberus/src/jquery-1.8.0.min.js'></script>
