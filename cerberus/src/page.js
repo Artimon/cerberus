@@ -7,7 +7,9 @@ cerberusApp.controller('CerberusCtrl', ['$scope', '$http', function ($scope, $ht
 	$scope.files = [];
 	$scope.total = 0;
 	$scope.changed = 0;
+	$scope.progress = 0;
 	$scope.nothingToDoHere = false;
+	$scope.showDropDown = false;
 
 	/**
 	 * @param {string} url
@@ -37,6 +39,10 @@ cerberusApp.controller('CerberusCtrl', ['$scope', '$http', function ($scope, $ht
 					$scope.callDeploy(key, url);
 				}
 
+				$scope.progress = Math.round(
+					100 * (key / $scope.files.length)
+				);
+
 				$scope.$apply();
 			}
 		);
@@ -59,10 +65,11 @@ cerberusApp.controller('CerberusCtrl', ['$scope', '$http', function ($scope, $ht
 
 	$scope.loadProject = function (id) {
 		$scope.projectId = id;
+		$scope.progress = 0;
 
 		var url = $scope.url + 'files.php?project=' + id;
 
-		$('#body').showLoader();
+		$('#banner').showLoader();
 
 		$http.get(url).success(function (json) {
 			$scope.total = json.total;
@@ -73,6 +80,12 @@ cerberusApp.controller('CerberusCtrl', ['$scope', '$http', function ($scope, $ht
 
 			$.fn.removeLoader();
 		});
+	};
+
+	$scope.toggleDropDown = function ($event) {
+		$event.stopPropagation();
+
+		$scope.showDropDown = !$scope.showDropDown;
 	};
 }]);
 
