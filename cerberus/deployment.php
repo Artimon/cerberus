@@ -25,9 +25,19 @@ class Deployment {
 	private $folders;
 
 	/**
+	 * @var string[]
+	 */
+	private $ignore = array();
+
+	/**
 	 * @var DeployFile[]
 	 */
 	private $deployFiles;
+
+	/**
+	 * @var Cache
+	 */
+	private $cache;
 
 	/**
 	 * @return Ftp
@@ -72,6 +82,13 @@ class Deployment {
 		$this->folders[$folderName] = $filesOnly;
 
 		return $this;
+	}
+
+	/**
+	 * @param array $ignore
+	 */
+	public function addIgnore(array $ignore) {
+		$this->ignore = $ignore;
 	}
 
 	/**
@@ -128,14 +145,20 @@ class Deployment {
 
 		set_time_limit(60);
 
+		$domain = $login['domain'];
+		$this->cache = new Cache($domain);
+		$this->cache->prepare();
+
 		$this->generateConfigs();
 
-		$this->ftp()->connect($login['domain'], $login['user'], $login['password']);
+		$this->ftp()->connect($domain, $login['user'], $login['password']);
 		foreach ($this->folders as $directoryPath => $filesOnly) {
 			$this->collectLocalFiles($directoryPath, $filesOnly);
 			$this->collectFtpFiles($directoryPath);
 		}
 		$this->ftp()->disconnect();
+
+		$this->cache->write();
 
 		return $this->deployFiles;
 	}
@@ -153,15 +176,37 @@ class Deployment {
 	}
 
 	/**
+	 * @param string $ftpFilePath
+	 * @return bool|int
+	 */
+	protected function fileModTime($ftpFilePath) {
+		$fileModTime = $this->cache->fileModTime($ftpFilePath);
+		if (!$fileModTime) {
+			$fileModTime = $this->ftp()->fileModTime($ftpFilePath);
+			$this->cache->add($ftpFilePath, $fileModTime);
+		}
+
+		return $fileModTime;
+	}
+
+	/**
 	 * @param string $directoryPath
 	 * @param bool $filesOnly
 	 */
 	protected function collectLocalFiles($directoryPath, $filesOnly) {
 		$directoryResource = opendir($directoryPath);
 
+		$ignore = array('.', '..');
+
 		while ($fileName = readdir($directoryResource)) {
-			if (strpos($fileName, '.') === 0) {
+			if (in_array($fileName, $ignore)) {
 				continue;
+			}
+
+			foreach ($this->ignore as $ignorePart) {
+				if (strpos($fileName, $ignorePart) !== false) {
+					continue 2;
+				}
 			}
 
 			$filePath = $this->filePath($directoryPath, $fileName);
@@ -175,8 +220,25 @@ class Deployment {
 				continue;
 			}
 
-			$liveTimestamp = $this->ftp()->fileModTime($ftpFilePath);
+			$liveTimestamp = $this->fileModTime($ftpFilePath);
 			$localTimestamp = filemtime($filePath);
+
+			if (!$liveTimestamp) {
+				$directory = explode('/', $filePath);
+				array_pop($directory);
+				$directory = implode('/', $directory);
+				$ftpDirectory = $this->root . $directory;
+
+				if ($directory) {
+					$deployDir = new DeployFile();
+					$deployDir
+						->setLocalPath($directory)
+						->setRemotePath($ftpDirectory)
+						->setActionDirCreate();
+
+					$this->deployFiles[$ftpDirectory] = $deployDir;
+				}
+			}
 
 			$deployFile = new DeployFile();
 			$deployFile

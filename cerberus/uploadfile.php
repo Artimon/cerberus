@@ -29,8 +29,12 @@ class UploadFile {
 			return;
 		}
 
+		$domain = $login['domain'];
+		$cache = new Cache($domain);
+		$cache->prepare();
+
 		$ftp = new Ftp();
-		if (!$ftp->connect($login['domain'], $login['user'], $login['password'])) {
+		if (!$ftp->connect($domain, $login['user'], $login['password'])) {
 			$this->response(false);
 			return;
 		}
@@ -41,19 +45,32 @@ class UploadFile {
 			->setLocalPath($_POST['localPath'])
 			->setAction($_POST['action']);
 
+		$remotePath = $deployFile->remotePath();
 		if ($deployFile->hasDeleteAction()) {
-			$success = $ftp->delete(
-				$deployFile->remotePath()
-			);
+			$success = $ftp->delete($remotePath);
+
+			if ($success) {
+				$cache->remove($remotePath);
+			}
+		}
+		elseif ($deployFile->hasDirCreateAction()) {
+			$success = $ftp->createDirectory($remotePath);
 		}
 		else {
 			$success = $ftp->upload(
-				$deployFile->remotePath(),
+				$remotePath,
 				$deployFile->localPath()
 			);
+
+			if ($success) {
+				// Update next time.
+				$cache->remove($remotePath);
+			}
 		}
 
 		$this->response($success);
 		$ftp->disconnect();
+
+		$cache->write();
 	}
 }

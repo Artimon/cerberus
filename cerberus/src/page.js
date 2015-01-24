@@ -4,6 +4,7 @@ cerberusApp.controller('CerberusCtrl', ['$scope', '$http', function ($scope, $ht
 	$scope.url = '';
 	$scope.projects = [];
 	$scope.projectId = 0;
+	$scope.projectName = '';
 	$scope.files = [];
 	$scope.total = 0;
 	$scope.changed = 0;
@@ -23,8 +24,6 @@ cerberusApp.controller('CerberusCtrl', ['$scope', '$http', function ($scope, $ht
 	$scope.callDeploy = function (key, url) {
 		$scope.files[key].uploading = true;
 		$scope.files[key].project = $scope.projectId;
-		$scope.$apply();
-
 
 		$.post(
 			url,
@@ -63,8 +62,20 @@ cerberusApp.controller('CerberusCtrl', ['$scope', '$http', function ($scope, $ht
 		$scope.files = [];
 	};
 
-	$scope.loadProject = function (id) {
+	$scope.refresh = function () {
+		$scope.loadProject(
+			$scope.projectId,
+			$scope.projectName
+		);
+	};
+
+	/**
+	 * @param {number} id
+	 * @param {string} name
+	 */
+	$scope.loadProject = function (id, name) {
 		$scope.projectId = id;
+		$scope.projectName = name;
 		$scope.progress = 0;
 
 		var url = $scope.url + 'files.php?project=' + id;
@@ -76,7 +87,7 @@ cerberusApp.controller('CerberusCtrl', ['$scope', '$http', function ($scope, $ht
 			$scope.changed = json.changed;
 			$scope.files = json.files;
 
-			$scope.nothingToDoHere = json.files.length === 0;
+			$scope.nothingToDoHere = !json.files || json.files.length === 0;
 
 			$.fn.removeLoader();
 		});

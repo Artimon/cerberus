@@ -94,4 +94,12 @@ class Ftp {
 	public function delete($remotePath) {
 		return ftp_delete($this->ftpStream, $remotePath);
 	}
+
+	/**
+	 * @param $remotePath
+	 * @return string
+	 */
+	public function createDirectory($remotePath) {
+		return @ftp_mkdir($this->ftpStream, $remotePath);
+	}
 }

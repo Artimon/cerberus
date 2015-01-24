@@ -42,7 +42,7 @@ $projects = json_encode($projects);
 					<ul class="dropdown-menu" aria-labelledby="projects">
 						<li ng-repeat='project in projects'>
 							<a href="javascript:;" tabindex="-1"
-								ng-click='loadProject(project.id)'>
+								ng-click='loadProject(project.id, project.title)'>
 								{{project.title}}
 							</a>
 						</li>
@@ -72,9 +72,9 @@ $projects = json_encode($projects);
 		</div>
 	</div>
 
-	<div class="row" ng-show='files'>
+	<div class="row" ng-show='files.length > 0 || nothingToDoHere'>
 		<div class="col-lg-12">
-			<h2>Project Status</h2>
+			<h2>Project Status: {{projectName}}</h2>
 		</div>
 	</div>
 
@@ -102,6 +102,7 @@ $projects = json_encode($projects);
 					</div>
 					<button class="btn btn-primary" ng-click="deploy()">Deploy</button>
 					<button class="btn btn-default" ng-click="cancel()">Cancel</button>
+					<button class="btn btn-link" ng-click="refresh()">Refresh</button>
 				</div>
 			</div>
 		</div>
@@ -134,6 +135,7 @@ $projects = json_encode($projects);
 				<strong>Congratulations!</strong>
 				Everything is up to date.
 			</div>
+			<button class="btn btn-primary" ng-click="refresh()">Refresh</button>
 		</div>
 	</div>
 </div>

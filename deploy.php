@@ -1,6 +1,7 @@
 <?php
 
 require_once "cerberus/ftp.php";
+require_once "cerberus/cache.php";
 require_once "cerberus/uploadfile.php";
 require_once "cerberus/deployfile.php";
 

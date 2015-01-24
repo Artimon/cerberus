@@ -8,6 +8,8 @@ class DeployFile {
 	const ACTION_UPDATE	= 2;
 	const ACTION_IGNORE	= 3;
 	const ACTION_DELETE	= 4;
+	const ACTION_DIR_CREATE = 5;
+	const ACTION_DIR_DELETE = 6;
 
 	/**
 	 * @var int
@@ -64,6 +66,14 @@ class DeployFile {
 		$this->action = self::ACTION_DELETE;
 	}
 
+	public function setActionDirCreate() {
+		$this->action = self::ACTION_DIR_CREATE;
+	}
+
+	public function setActionDirDelete() {
+		$this->action = self::ACTION_DIR_DELETE;
+	}
+
 	/**
 	 * @return bool
 	 */
@@ -90,6 +100,20 @@ class DeployFile {
 	 */
 	public function hasDeleteAction() {
 		return ($this->action === self::ACTION_DELETE);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasDirCreateAction() {
+		return ($this->action === self::ACTION_DIR_CREATE);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasDirDeleteAction() {
+		return ($this->action === self::ACTION_DIR_DELETE);
 	}
 
 	/**

@@ -3,6 +3,7 @@
 error_reporting(E_ALL);
 
 require_once "cerberus/ftp.php";
+require_once "cerberus/cache.php";
 require_once "cerberus/deployfile.php";
 require_once "cerberus/deployment.php";
 
@@ -31,6 +32,10 @@ if (array_key_exists('clean', $config)) {
 	}
 }
 
+if (array_key_exists('ignore', $config)) {
+	$deployment->addIgnore($config['ignore']);
+}
+
 $deployFiles = $deployment->deployFiles($config['login']);
 
 $json = array(
@@ -46,10 +51,17 @@ foreach ($deployFiles as $deployFile) {
 		continue;
 	}
 
+	$remotePath = $deployFile->remotePath();
+	$localPath = $deployFile->localPath();
+
+	if (!$remotePath && !$localPath) {
+		continue;
+	}
+
 	$json['changed']++;
 	$json['files'][] = array(
-		'remotePath'	=> $deployFile->remotePath(),
-		'localPath'		=> $deployFile->localPath(),
+		'remotePath'	=> $remotePath,
+		'localPath'		=> $localPath,
 		'action'		=> $deployFile->action(),
 		'delete'		=> $deployFile->hasDeleteAction()
 	);
