@@ -260,7 +260,7 @@ class Deployment {
 
 		foreach ($ftpFileList as $ftpFilePath) {
 			// Weak approach to file detection.
-			if (substr($ftpFilePath, -4, 1) !== '.') {
+			if (preg_match('/\\.[a-z]{3,4}/i', $ftpFilePath) === 0) {
 				continue;
 			}
 

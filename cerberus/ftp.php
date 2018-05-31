@@ -53,7 +53,11 @@ class Ftp {
 			return array();
 		}
 
-		return (array)ftp_nlist($this->ftpStream, "./httpdocs/{$remotePath}");
+		if ($remotePath === '.') {
+			$remotePath = '';
+		}
+
+		return (array)ftp_nlist($this->ftpStream, "httpdocs/{$remotePath}");
 	}
 
 	/**
